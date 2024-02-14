@@ -10,7 +10,7 @@ import { emailTemplate } from "../../email/emailTemplate.js";
 // import {string} from "Joi"
 import pkg from 'bcrypt'
 import { nanoid } from 'nanoid'
-import { generateToken, verifyTokenN } from "../../utils/tokenFunctions.js";
+import {  verifyTokenN } from "../../utils/tokenFunctions.js";
 
 
 
