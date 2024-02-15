@@ -15,8 +15,7 @@ import {  verifyTokenN } from "../../utils/tokenFunctions.js";
 
 
 
-// const nationalIdFrontImage = req.files.nationalIdFrontImage[0].filename;
-  //  const nationalIdBackImage = req.files.nationalIdBackImage[0].filename;
+
 
 
 
@@ -34,7 +33,7 @@ export const signUp = handleError(async (req, res, next) => {
      if(existUserBySsn.ssn==ssn) return next(new AppError('ssn already exist',400));
   }
   let hashedPassword = bcrypt.hashSync(password, parseInt(process.env.SALTROUNDS));
-  let addedUser = await userModel.insertMany({ firstName,lastName,userName, email, password: hashedPassword,ssn ,nationalIdFrontImage,nationalIdBackImage});
+  let addedUser = await userModel.insertMany({ firstName,lastName,userName, email, password: hashedPassword,ssn });
   let verifyToken = jwt.sign({ id: addedUser[0]._id }, process.env.VERIFY_SECRET);
   sendEmail({ email, api: `https://metro-v23.onrender.com/api/v1/user/verfiy/${verifyToken}` }); //..
   res.json({ message: "Success", addedUser });
@@ -160,40 +159,41 @@ export const resetPassword = handleError(async (req, res, next) => {
 
 
 
+// const nationalIdFrontImage = req.files.nationalIdFrontImage[0].filename;
+  //  const nationalIdBackImage = req.files.nationalIdBackImage[0].filename;
 
 
 
 
 
 
+// const storage = multer.diskStorage({
+//   destination: function(req, file, cb) {
+//       cb(null, "uploads");
+//   },
+//   filename: function(req, file, cb) {
+//       // console.log(req.body.ssn)
+//       const exist = file.mimetype.split("/")[1];
+//       const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+//       const filename = file.fieldname + "-" + uniqueSuffix + "&" + req.body.ssn + "&" + `.${exist}`;
+//       cb(null, filename);
+//   },
+// });
+// // التليفون فصل ok
+// const multerFilter = (req, file, cb) => {
+//   // console.log(file.fieldname);
+//   // console.log("req: ", req.file)
+//   if (file.mimetype.startsWith("image")) {
+//       cb(null, true);
+//   } else {
+//       cb(new apiError("Only Images allowed", 400), false);
+//   }
+// };
 
-const storage = multer.diskStorage({
-  destination: function(req, file, cb) {
-      cb(null, "uploads");
-  },
-  filename: function(req, file, cb) {
-      // console.log(req.body.ssn)
-      const exist = file.mimetype.split("/")[1];
-      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-      const filename = file.fieldname + "-" + uniqueSuffix + "&" + req.body.ssn + "&" + `.${exist}`;
-      cb(null, filename);
-  },
-});
-// التليفون فصل ok
-const multerFilter = (req, file, cb) => {
-  // console.log(file.fieldname);
-  // console.log("req: ", req.file)
-  if (file.mimetype.startsWith("image")) {
-      cb(null, true);
-  } else {
-      cb(new apiError("Only Images allowed", 400), false);
-  }
-};
-
-const upload = multer({ storage: storage, fileFilter: multerFilter });
-// const uploadImge = upload.single("nationalIdFrontImage");
-export const uploadMultipleImages = upload.fields([
-  { name: "nationalIdFrontImage", maxCount: 1 },
-  { name: "nationalIdBackImage", maxCount: 1 },
-]);
+// const upload = multer({ storage: storage, fileFilter: multerFilter });
+// // const uploadImge = upload.single("nationalIdFrontImage");
+// export const uploadMultipleImages = upload.fields([
+//   { name: "nationalIdFrontImage", maxCount: 1 },
+//   { name: "nationalIdBackImage", maxCount: 1 },
+// ]);
 //يلاااا
