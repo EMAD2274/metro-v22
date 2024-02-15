@@ -1,7 +1,7 @@
 import { userModel } from "../../../db/models/user.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import multer from "multer";
+// import multer from "multer";
 import { sendEmail } from "../../email/sendEmail.js";
 import { handleError } from "../../middleware/handleAsyncError.js";
 import { AppError } from "../../utils/AppError.js";
