@@ -36,7 +36,7 @@ export const signUp = handleError(async (req, res, next) => {
   let hashedPassword = bcrypt.hashSync(password, parseInt(process.env.SALTROUNDS));
   let addedUser = await userModel.insertMany({ firstName,lastName,userName, email, password: hashedPassword,ssn ,nationalIdFrontImage,nationalIdBackImage});
   let verifyToken = jwt.sign({ id: addedUser[0]._id }, process.env.VERIFY_SECRET);
-  sendEmail({ email, api: `http://localhost:5000/api/v1/user/verfiy/${verifyToken}` }); //..
+  sendEmail({ email, api: `https://metro-v22.onrender.com/api/v1/user/verfiy/${verifyToken}` }); //..
   res.json({ message: "Success", addedUser });
 });
 
@@ -105,7 +105,7 @@ export const forgetPassword = handleError( async (req,res,next)=> {
   // })
   // const resetPasswordLink = `${req.protocol}://${req.headers.host}/api/v1/user/reset${token}`
   let verifyToken = jwt.sign({ id: email[0]._id }, process.env.VERIFY_SECRET);
-  const isEmailSent = sendEmail({ email, api: `http://localhost:3000/api/v1/user/reset/${verifyToken}` }); //....
+  const isEmailSent = sendEmail({ email, api: `https://metro-v22.onrender.com/api/v1/user/reset/${verifyToken}` }); //....
   if(!isEmailSent){
     return next(new AppError(`fail to sent reset password email `, 400))
   }
