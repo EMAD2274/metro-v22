@@ -1,12 +1,13 @@
 import { userModel } from "../../../db/models/user.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import multer from "multer";
 import { sendEmail } from "../../email/sendEmail.js";
 import { handleError } from "../../middleware/handleAsyncError.js";
 import { AppError } from "../../utils/AppError.js";
 // import Joi from "joi";
-import { signUpSchema,loginSchema } from "./user.vaildator.js";
-import { emailTemplate } from "../../email/emailTemplate.js";
+// import { signUpSchema,loginSchema } from "./user.vaildator.js";
+// import { emailTemplate } from "../../email/emailTemplate.js";
 // import {string} from "Joi"
 import pkg from 'bcrypt'
 import { nanoid } from 'nanoid'
@@ -19,15 +20,23 @@ import {  verifyTokenN } from "../../utils/tokenFunctions.js";
 
 
 export const signUp = handleError(async (req, res, next) => {
+  console.log(req.files)
+  console.log(req.body)
   let { firstName,lastName,userName, email, password,ssn } = req.body;
+  const nationalIdFrontImage = req.files.nationalIdFrontImage[0].filename;
+   const nationalIdBackImage = req.files.nationalIdBackImage[0].filename;
   
-  
-  let existUser = await userModel.findOne({ email });
-  if (existUser) return next(new AppError(`email already exist`, 409));
+  let existUserByEmail = await userModel.findOne({ email });
+    
+  if (existUserByEmail) return next(new AppError(`email already exist`, 409));
+  const existUserBySsn = await userModel.findOne({ ssn });
+  if(existUserBySsn){
+     if(existUserBySsn.ssn==ssn) return next(new AppError('ssn already exist',400));
+  }
   let hashedPassword = bcrypt.hashSync(password, parseInt(process.env.SALTROUNDS));
-  let addedUser = await userModel.insertMany({ firstName,lastName,userName, email, password: hashedPassword,ssn });
+  let addedUser = await userModel.insertMany({ firstName,lastName,userName, email, password: hashedPassword,ssn ,nationalIdFrontImage,nationalIdBackImage});
   let verifyToken = jwt.sign({ id: addedUser[0]._id }, process.env.VERIFY_SECRET);
-  sendEmail({ email, api: `https://metro-v55.onrender.com/api/v1/user/verfiy/${verifyToken}` });
+  sendEmail({ email, api: `http://localhost:5000/api/v1/user/verfiy/${verifyToken}` }); //..
   res.json({ message: "Success", addedUser });
 });
 
@@ -58,6 +67,7 @@ export const logIn = handleError(async (req, res,next) => {
         next(new AppError(`u have to register first`, 400));
     
     }
+    
 
 
 
@@ -95,7 +105,7 @@ export const forgetPassword = handleError( async (req,res,next)=> {
   // })
   // const resetPasswordLink = `${req.protocol}://${req.headers.host}/api/v1/user/reset${token}`
   let verifyToken = jwt.sign({ id: email[0]._id }, process.env.VERIFY_SECRET);
-  const isEmailSent = sendEmail({ email, api: `https://metro-v22.onrender.com/v1/user/reset/${verifyToken}` });
+  const isEmailSent = sendEmail({ email, api: `http://localhost:3000/api/v1/user/reset/${verifyToken}` }); //....
   if(!isEmailSent){
     return next(new AppError(`fail to sent reset password email `, 400))
   }
@@ -157,3 +167,33 @@ export const resetPassword = handleError(async (req, res, next) => {
 
 
 
+const storage = multer.diskStorage({
+  destination: function(req, file, cb) {
+      cb(null, "uploads");
+  },
+  filename: function(req, file, cb) {
+      // console.log(req.body.ssn)
+      const exist = file.mimetype.split("/")[1];
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      const filename = file.fieldname + "-" + uniqueSuffix + "&" + req.body.ssn + "&" + `.${exist}`;
+      cb(null, filename);
+  },
+});
+// التليفون فصل ok
+const multerFilter = (req, file, cb) => {
+  // console.log(file.fieldname);
+  // console.log("req: ", req.file)
+  if (file.mimetype.startsWith("image")) {
+      cb(null, true);
+  } else {
+      cb(new apiError("Only Images allowed", 400), false);
+  }
+};
+
+const upload = multer({ storage: storage, fileFilter: multerFilter });
+// const uploadImge = upload.single("nationalIdFrontImage");
+export const uploadMultipleImages = upload.fields([
+  { name: "nationalIdFrontImage", maxCount: 1 },
+  { name: "nationalIdBackImage", maxCount: 1 },
+]);
+//يلاااا
