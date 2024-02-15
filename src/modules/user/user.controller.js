@@ -35,7 +35,7 @@ export const signUp = handleError(async (req, res, next) => {
   let hashedPassword = bcrypt.hashSync(password, parseInt(process.env.SALTROUNDS));
   let addedUser = await userModel.insertMany({ firstName,lastName,userName, email, password: hashedPassword,ssn });
   let verifyToken = jwt.sign({ id: addedUser[0]._id }, process.env.VERIFY_SECRET);
-sendEmail({ email, api: `https://metro-v23.onrender.com/api/v1/user/verfiy/${verifyToken}` }); //..
+  sendEmail({ email, api: `https://metro-v23.onrender.com/api/v1/user/verfiy/${verifyToken}` }); //..
   res.json({ message: "Success", addedUser });
 });
 
