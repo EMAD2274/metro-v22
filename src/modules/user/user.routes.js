@@ -1,6 +1,6 @@
 
 import express from 'express';
-import { signUp, logIn, verifyEmail, forgetPassword, resetPassword,uploadMultipleImages } from "./user.controller.js";
+import { signUp, logIn, verifyEmail, forgetPassword, resetPassword } from "./user.controller.js";
 import { validation } from '../../middleware/validation.js';
 import {  loginSchema, signUpSchema } from './user.vaildator.js';
 
