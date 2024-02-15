@@ -23,8 +23,8 @@ export const signUp = handleError(async (req, res, next) => {
   console.log(req.files)
   console.log(req.body)
   let { firstName,lastName,userName, email, password,ssn } = req.body;
-  const nationalIdFrontImage = req.files.nationalIdFrontImage[0].filename;
-   const nationalIdBackImage = req.files.nationalIdBackImage[0].filename;
+  // const nationalIdFrontImage = req.files.nationalIdFrontImage[0].filename;
+  //  const nationalIdBackImage = req.files.nationalIdBackImage[0].filename;
   
   let existUserByEmail = await userModel.findOne({ email });
     
