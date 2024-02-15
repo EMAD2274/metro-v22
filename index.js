@@ -18,7 +18,6 @@ app.use(cors())
 app.use(express.json())
 
 
-
 connection()
 app.use("/api/v1/user", userRoutes);
 // app.use("/api/v1/message", messageRoutes)
