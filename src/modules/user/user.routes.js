@@ -6,8 +6,8 @@ import {  loginSchema, signUpSchema } from './user.vaildator.js';
 
 const userRoutes = express.Router()
 
-// 
-userRoutes.post("/signUp",uploadMultipleImages,validation(signUpSchema) ,signUp);
+// uploadMultipleImages
+userRoutes.post("/signUp",validation(signUpSchema) ,signUp);
 userRoutes.post("/logIn",validation(loginSchema), logIn);
 userRoutes.post("/forget", forgetPassword);
 userRoutes.post("/reset/:token", resetPassword);
